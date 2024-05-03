@@ -1,31 +1,55 @@
-import * as React from 'react';
+import React, { useRef } from 'react';
+import { View, Button, Text, StyleSheet } from 'react-native';
+// important to wrap with SafeAreaProvider when targeting on web
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import TopSheet, { type ModalHandle } from 'react-native-top-sheet';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-top-sheet';
+const App = () => {
+  const modalRef = useRef<ModalHandle>(null);
 
-export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const openModal = () => {
+    modalRef.current?.show();
+  };
 
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
-  }, []);
+  const closeModal = () => {
+    modalRef.current?.hide();
+  };
+
+  const snapHeight = 0.3; //30%
+  // const snapHeight = 300; // = 300px
 
   return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        <Button title="Open Modal" onPress={openModal} />
+        <TopSheet ref={modalRef} snap={snapHeight} shouldHideOnOverlayPress>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>This is the modal content!</Text>
+            <Button title="Close Modal" onPress={closeModal} />
+          </View>
+        </TopSheet>
+      </View>
+    </SafeAreaProvider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5fcff',
   },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+  modalContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
   },
 });
+
+export default App;
